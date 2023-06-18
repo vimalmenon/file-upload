@@ -1,8 +1,7 @@
 * Able to use require 
 * Create a file to for production
-* able to upload the video
-* able to upload the Images
-* able to update the database
+* Ability to upload the video / Images
+* Ability to update the database
 * Ability to authenticate with aws authenticate
 * Make it working with App Runner
 * Create a Docker file

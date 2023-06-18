@@ -4,23 +4,38 @@ const formidableMiddleware = require("express-formidable");
 const { DynamoDB, S3 } = require("aws-sdk");
 
 const app = express();
-const port = 3000;
 
 const dynamoDB = new DynamoDB.DocumentClient();
 const s3 = new S3();
 
-console.log(dynamoDB, s3);
+const env = {
+  port: process.env.PORT || 8000,
+};
 
 app.use(formidableMiddleware());
 
+const uploadImageToS3 = () => {};
+
+const updateRecord = () => {};
+
 app.put("/", (req, res) => {
   console.log(req.files);
-  res.json({
-    code: 1,
-    body: "test",
-  });
+  const { file, name, ...rest } = req.fields;
+  if (file && name) {
+    uploadImageToS3(file);
+    updateRecord();
+    res.json({
+      code: 1,
+      ...rest,
+    });
+  } else {
+    res.json({
+      code: 2,
+      ...rest,
+    });
+  }
 });
 
-app.listen(port, () => {
-  console.log(`Application is listening on port ${port}`);
+app.listen(env.port, () => {
+  console.log(`Application is listening on port ${env.port}`);
 });
