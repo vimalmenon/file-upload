@@ -3,3 +3,7 @@
 * able to upload the video
 * able to upload the Images
 * able to update the database
+* Ability to authenticate with aws authenticate
+* Make it working with App Runner
+* Create a Docker file
+* Upload to docker repo
