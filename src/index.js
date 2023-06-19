@@ -10,18 +10,30 @@ const s3 = new S3();
 
 const env = {
   port: process.env.PORT || 8000,
+  table: process.env.DYNAMO_DB_Table || "",
+  s3: process.env.S3_BUCKET || "",
 };
 
 app.use(formidableMiddleware());
+
+const checkEnv = () => {
+  let check = true;
+  env.keys().forEach((key) => {
+    if (!env[key]) {
+      check = false;
+    }
+  });
+  return check;
+};
 
 const uploadImageToS3 = () => {};
 
 const updateRecord = () => {};
 
 app.put("/", (req, res) => {
-  console.log(req.files);
-  const { file, name, ...rest } = req.fields;
-  if (file && name) {
+  const { ...rest } = req.query;
+  const { file, name } = req.fields;
+  if (file && name && checkEnv()) {
     uploadImageToS3(file);
     updateRecord();
     res.json({
