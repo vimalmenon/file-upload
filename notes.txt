@@ -1,4 +1,4 @@
 * set up eslint
 * set up GitHub Action
 * Upload to docker repo
-* Run in with App Runner
+* Run in App Runner
