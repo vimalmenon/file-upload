@@ -1,5 +1,3 @@
-* Able to use import 
-* use TS and create a build file
 * set up eslint
 * set up GitHub Action
 * Create a Docker file
