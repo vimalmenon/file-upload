@@ -1,8 +1,7 @@
-* Able to use require 
-* Create a file to for production
-* Ability to upload the video / Images
-* Ability to update the database
-* Ability to authenticate with aws authenticate
-* Make it working with App Runner
+* Able to use import 
+* use TS and create a build file
+* set up eslint
+* set up GitHub Action
 * Create a Docker file
 * Upload to docker repo
+* Run in with App Runner
