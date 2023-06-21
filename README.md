@@ -1,2 +1,2 @@
 # Upload of Images and Videos
-This is helper to upload the file to S3 bucket and update the dynamodb
+This is an API to upload the images and videos to S3 bucket and update dynamodb
