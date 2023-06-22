@@ -1,3 +1,7 @@
+import dotenv from 'dotenv';
+
+dotenv.config();
+
 const StorageFolderMapping = {
   image: 'images',
   file: 'files',

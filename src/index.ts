@@ -1,6 +1,5 @@
 import fs from 'fs';
 
-import dotenv from 'dotenv';
 import express from 'express';
 import formidableMiddleware from 'express-formidable';
 
@@ -14,7 +13,6 @@ const appKey = 'APP#KM#FOLDERS_FILE';
 // const folder = '08bdaba3-4452-44fb-bcd2-aa00791fb8ce';
 
 app.use(formidableMiddleware());
-dotenv.config();
 
 const uploadImageToS3 = (key: string, file: any) => {
   return s3
@@ -111,9 +109,18 @@ app.put('/sync', async (req, res) => {
     });
     return;
   }
+  const result = await s3
+    .listObjectsV2({
+      Bucket: env.s3,
+      Prefix: 'videos',
+    })
+    .promise();
+
   res.json({
     code: 0,
     message: 'success',
+    result,
+    length: result.Contents?.length,
     ...rest,
   });
 });
