@@ -27,4 +27,6 @@ jobs:
         USER_POOL_ID=${{ env.USER_POOL_ID }} >> .env 
         CLIENT_ID=${{ env.CLIENT_ID }} >> .env
     - name: Build the Docker image
-      run: docker build -f Dockerfile . --tag km-file-upload:latest
+      run: docker build -t krishiv-menon .
+        - docker tag krishiv-menon:latest 484344126717.dkr.ecr.us-east-1.amazonaws.com/krishiv-menon:latest
+        - docker push 484344126717.dkr.ecr.us-east-1.amazonaws.com/krishiv-menon:latest
