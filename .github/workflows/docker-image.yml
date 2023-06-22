@@ -16,7 +16,6 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v3
     - name: Create env file
@@ -27,7 +26,5 @@ jobs:
         S3_BUCKET=${{ env.S3_BUCKET }} >> .env 
         USER_POOL_ID=${{ env.USER_POOL_ID }} >> .env 
         CLIENT_ID=${{ env.CLIENT_ID }} >> .env
-    - name: Show .env
-      run: cat .env
     - name: Build the Docker image
       run: docker build -f Dockerfile . --tag km-file-upload:latest
