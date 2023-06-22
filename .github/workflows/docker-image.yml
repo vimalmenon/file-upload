@@ -30,4 +30,4 @@ jobs:
     - name: Show .env
       run: ls -ltra
     - name: Build the Docker image
-      run: docker build . --tag km-file-upload:latest
+      run: docker build -f Dockerfile ... --tag km-file-upload:latest
