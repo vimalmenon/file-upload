@@ -34,12 +34,12 @@ jobs:
         aws-secret-access-key: ${{ env.SECRET_KEY }}
         aws-region: ${{ env.REGION }}
     - name: Build the Docker image
-      run: docker build -t krishiv-menon .
-    - name: Build tag
-      env:
-        ECR_REGISTRY: 484344126717.dkr.ecr.us-east-1.amazonaws.com
-        ECR_REPOSITORY: krishiv-menon
-        IMAGE_TAG: latest
-      run: |
-        docker tag krishiv-menon:latest 484344126717.dkr.ecr.us-east-1.amazonaws.com/krishiv-menon:latest
-        docker push 484344126717.dkr.ecr.us-east-1.amazonaws.com/krishiv-menon:latest
+      run: docker build -t krishiv-menon:latest .
+    - name: Push to ECR
+      uses: jwalton/gh-ecr-push@v1
+      with:
+        access-key-id: ${{ env.ACCESS_KEY }}
+        secret-access-key: ${{ env.SECRET_KEY }}
+        region: ${{ env.REGION }}
+        local-image: krishiv-menon:latest
+        image: krishiv-menon:latest
