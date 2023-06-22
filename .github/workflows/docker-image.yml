@@ -27,6 +27,6 @@ jobs:
         USER_POOL_ID=${{ env.USER_POOL_ID }} >> .env \
         CLIENT_ID=${{ env.CLIENT_ID }} >> .env
     - name: Show .env
-      run: cat .env
+      run: ls -ltra
     - name: Build the Docker image
-      run: docker build .  --tag km-file-upload:latest
+      run: docker build . --tag km-file-upload:latest
