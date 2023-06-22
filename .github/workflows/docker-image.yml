@@ -20,7 +20,8 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Create env file
-      run: touch .env \
+      run: |
+        touch .env \
         PORT=${{ env.PORT }} >> .env \
         DYNAMO_DB_Table=${{ env.DYNAMO_DB_Table }} >> .env\
         S3_BUCKET=${{ env.S3_BUCKET }} >> .env \
