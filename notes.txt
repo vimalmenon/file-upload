@@ -1,2 +1,1 @@
-* Upload to docker repo
 * Run in App Runner
