@@ -1,3 +1,2 @@
-* set up eslint
 * Upload to docker repo
 * Run in App Runner
