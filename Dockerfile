@@ -1,10 +1,10 @@
-FROM node:18-bullseye-slim
+FROM node:18-alpine3.17
 
 WORKDIR /app
 
 COPY . .
 
-RUN npm install -g typescript && npm install & npm run build
+RUN npm install & npm run build
 
 EXPOSE 3000
 

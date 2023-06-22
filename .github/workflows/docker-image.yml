@@ -19,5 +19,15 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+    - name: Create env file
+      run: |
+        touch .env 
+        PORT=${{ env.PORT }} >> .env 
+        DYNAMO_DB_Table=${{ env.DYNAMO_DB_Table }} >> .env
+        S3_BUCKET=${{ env.S3_BUCKET }} >> .env 
+        USER_POOL_ID=${{ env.USER_POOL_ID }} >> .env 
+        CLIENT_ID=${{ env.CLIENT_ID }} >> .env
+    - name: Show .env
+      run: ls -ltra
     - name: Build the Docker image
       run: docker build . --tag km-file-upload:latest
