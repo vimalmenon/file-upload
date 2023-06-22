@@ -1,7 +1,7 @@
 import express from "express";
 import formidableMiddleware from "express-formidable";
 import fs from "fs";
-import dotenv from 'dotenv';
+import dotenv from "dotenv";
 
 import { DynamoDB, S3 } from "aws-sdk";
 import { CognitoJwtVerifier } from "aws-jwt-verify";
@@ -14,6 +14,7 @@ const dynamoDB = new DynamoDB.DocumentClient({
 const s3 = new S3();
 
 const appKey = "APP#KM#FOLDERS_FILE";
+const folder = "08bdaba3-4452-44fb-bcd2-aa00791fb8ce";
 
 app.use(formidableMiddleware());
 dotenv.config();
@@ -61,7 +62,6 @@ const DriveFolderMapping = {
   "video/mp4": StorageFolderMapping.video,
   "audio/mpeg": StorageFolderMapping.audio,
 };
-
 
 const checkEnv = () => {
   if (!env.clientId) {
@@ -126,6 +126,7 @@ app.put("/", async (req, res) => {
   if (!checkEnv()) {
     res.json({
       message: "Env values are not set",
+      code: 1,
       ...rest,
     });
     return;
@@ -148,7 +149,35 @@ app.put("/", async (req, res) => {
     return;
   }
   res.json({
-    code: 2,
+    code: 0,
+    message: "success",
+    ...rest,
+  });
+});
+
+app.put("/sync", async (req, res) => {
+  const { authorization } = req.headers;
+  const { ...rest } = req.query;
+  if (!checkEnv()) {
+    res.json({
+      message: "Env values are not set",
+      code: 1,
+      ...rest,
+    });
+    return;
+  }
+  const hasAccess = await checkAuthorization(authorization as string);
+  if (!hasAccess) {
+    res.json({
+      message: "You are not authorized",
+      code: 1,
+      ...rest,
+    });
+    return;
+  }
+  res.json({
+    code: 0,
+    message: "success",
     ...rest,
   });
 });

@@ -2,14 +2,14 @@ name: Docker Image CI
 
 on:
   push:
-    branches: [ "test" ]
+    branches: [ "master" ]
 
 env:
   PORT: 8000
-  DYNAMO_DB_Table: ${{secrets.ACCESS_KEY}}
-  S3_BUCKET: ${{secrets.S3_BUCKET}}
-  USER_POOL_ID: ${{secrets.USER_POOL_ID}}
-  CLIENT_ID: ${{secrets.CLIENT_ID}}
+  DYNAMO_DB_Table: ${{ secrets.DYNAMO_DB_Table }}
+  S3_BUCKET: ${{ secrets.S3_BUCKET }}
+  USER_POOL_ID: ${{ secrets.USER_POOL_ID }}
+  CLIENT_ID: ${{ secrets.CLIENT_ID }}
 
 jobs:
 
@@ -19,10 +19,14 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+    - name: Create env file
+      run: touch .env \
+        PORT=${{ env.PORT }} >> .env \
+        DYNAMO_DB_Table=${{ env.DYNAMO_DB_Table }} >> .env\
+        S3_BUCKET=${{ env.S3_BUCKET }} >> .env \
+        USER_POOL_ID=${{ env.USER_POOL_ID }} >> .env \
+        CLIENT_ID=${{ env.CLIENT_ID }} >> .env
+    - name: Show .env
+      run: cat .env
     - name: Build the Docker image
-      run: docker build .  --tag my-image-name:$(date +%s) \ 
-        --build-arg PORT=${{ env.APP_NAME }} \
-        --build-arg DYNAMO_DB_Table=${{ env.DYNAMO_DB_Table }} \
-        --build-arg S3_BUCKET=${{ env.S3_BUCKET }} \
-        --build-arg USER_POOL_ID=${{ env.USER_POOL_ID }} \
-        --build-arg CLIENT_ID=${{ env.CLIENT_ID }}
+      run: docker build .  --tag km-file-upload:latest
