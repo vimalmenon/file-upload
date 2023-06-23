@@ -2,12 +2,14 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-const StorageFolderMapping = {
+export const StorageFolderMapping = {
   image: 'images',
   file: 'files',
   video: 'videos',
   audio: 'audios',
 };
+
+export const Folders = ['files', 'images', 'videos'];
 
 export const DriveFolderMapping = {
   'image/jpeg': StorageFolderMapping.image,
@@ -33,6 +35,18 @@ export const SupportedFileTypes = [
   'audio/mpeg',
 ];
 
+export const FileExtensionMapping: Record<string, string> = {
+  jpeg: 'image/jpeg',
+  jpg: 'image/jpeg',
+  png: 'image/png',
+  heic: 'image/heic',
+  mp4: 'video/mp4',
+  mp3: 'audio/mpeg',
+  pdf: 'application/pdf',
+  zip: 'application/zip',
+  json: 'application/json',
+  mov: 'video/quicktime',
+};
 export const env = {
   port: process.env.PORT,
   table: process.env.DYNAMO_DB_Table || '',
@@ -40,3 +54,7 @@ export const env = {
   userPoolId: process.env.USER_POOL_ID || '',
   clientId: process.env.CLIENT_ID || '',
 };
+
+export const FolderAppKey = 'APP#KM#FOLDERS_FILE';
+
+export const UnIndexedFolder = '08bdaba3-4452-44fb-bcd2-aa00791fb8ce';

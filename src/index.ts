@@ -4,13 +4,10 @@ import express from 'express';
 import formidableMiddleware from 'express-formidable';
 
 import { dynamoDB, s3, verifier } from './awsService';
-import { env } from './constants';
-import { checkEnv } from './helper';
+import { env, FolderAppKey } from './constants';
+import { checkEnv, getAllFilesFromBucket, indexFiles } from './helper';
 
 const app = express();
-
-const appKey = 'APP#KM#FOLDERS_FILE';
-// const folder = '08bdaba3-4452-44fb-bcd2-aa00791fb8ce';
 
 app.use(formidableMiddleware());
 
@@ -29,11 +26,10 @@ const updateRecord = ({ fileName }: any) => {
     .put({
       TableName: env.table,
       Item: {
-        appKey: appKey,
+        appKey: FolderAppKey,
         sortKey: `images#${fileName}`,
         createdDate: new Date().toISOString(),
         updatedDate: new Date().toISOString(),
-        isIndexed: false,
       },
     })
     .promise();
@@ -100,27 +96,22 @@ app.put('/sync', async (req, res) => {
     });
     return;
   }
-  const hasAccess = await checkAuthorization(authorization as string);
-  if (!hasAccess) {
-    res.json({
-      message: 'You are not authorized',
-      code: 1,
-      ...rest,
-    });
-    return;
-  }
-  const result = await s3
-    .listObjectsV2({
-      Bucket: env.s3,
-      Prefix: 'videos',
-    })
-    .promise();
-
+  // const hasAccess = await checkAuthorization(authorization as string);
+  // if (!hasAccess) {
+  //   res.json({
+  //     message: 'You are not authorized',
+  //     code: 1,
+  //     ...rest,
+  //   });
+  //   return;
+  // }
+  const values = await getAllFilesFromBucket();
+  indexFiles(values);
   res.json({
     code: 0,
     message: 'success',
-    result,
-    length: result.Contents?.length,
+    result: values,
+    length: values.length,
     ...rest,
   });
 });
