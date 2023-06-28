@@ -11,8 +11,9 @@ export const StorageFolderMapping = {
 
 export const Folders = ['files', 'images', 'videos'];
 
-export const DriveFolderMapping = {
+export const DriveFolderMapping: Record<string, string> = {
   'image/jpeg': StorageFolderMapping.image,
+  'image/jpg': StorageFolderMapping.image,
   'image/png': StorageFolderMapping.image,
   'image/heic': StorageFolderMapping.image,
   'application/pdf': StorageFolderMapping.file,
@@ -46,6 +47,19 @@ export const FileExtensionMapping: Record<string, string> = {
   zip: 'application/zip',
   json: 'application/json',
   mov: 'video/quicktime',
+};
+
+export const FileTypeMapping: Record<string, string> = {
+  'image/jpeg': 'jpeg',
+  'image/jpg': 'jpg',
+  'image/png': 'png',
+  'image/heic': 'heic',
+  'video/mp4': 'mp4',
+  'audio/mpeg': 'mp3',
+  'application/pdf': 'pdf',
+  'application/zip': 'zip',
+  'application/json': 'json',
+  'video/quicktime': 'mov',
 };
 export const env = {
   port: process.env.PORT,
