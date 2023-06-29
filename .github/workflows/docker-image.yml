@@ -27,6 +27,9 @@ jobs:
         echo S3_BUCKET=${{ env.S3_BUCKET }} >> .env 
         echo USER_POOL_ID=${{ env.USER_POOL_ID }} >> .env 
         echo CLIENT_ID=${{ env.CLIENT_ID }} >> .env
+        echo AWS_ACCESS_KEY_ID=${{ env.ACCESS_KEY }} >> .env
+        echo AWS_SECRET_ACCESS_KEY=${{ env.SECRET_KEY }} >> .env
+        echo AWS_DEFAULT_REGION=${{ env.REGION }} >> .env
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v1
       with:
