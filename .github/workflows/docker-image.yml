@@ -27,6 +27,7 @@ jobs:
         S3_BUCKET=${{ env.S3_BUCKET }} >> .env 
         USER_POOL_ID=${{ env.USER_POOL_ID }} >> .env 
         CLIENT_ID=${{ env.CLIENT_ID }} >> .env
+        cat .env
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v1
       with:
