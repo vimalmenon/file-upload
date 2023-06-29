@@ -10,6 +10,6 @@ export const s3 = new S3();
 
 export const verifier = CognitoJwtVerifier.create({
   userPoolId: env.userPoolId,
-  tokenUse: 'access',
+  tokenUse: 'id',
   clientId: env.clientId,
 });

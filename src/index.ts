@@ -1,20 +1,18 @@
+import { randomUUID } from 'crypto';
 import fs from 'fs';
 
-import dotenv from 'dotenv';
+import cors from 'cors';
 import express from 'express';
 import formidableMiddleware from 'express-formidable';
 
 import { dynamoDB, s3, verifier } from './awsService';
-import { env } from './constants';
-import { checkEnv } from './helper';
+import { env, FolderAppKey, FileTypeMapping, DriveFolderMapping } from './constants';
+import { checkEnv, getAllFilesFromBucket, indexFiles } from './helper';
 
 const app = express();
 
-const appKey = 'APP#KM#FOLDERS_FILE';
-// const folder = '08bdaba3-4452-44fb-bcd2-aa00791fb8ce';
-
 app.use(formidableMiddleware());
-dotenv.config();
+app.use(cors());
 
 const uploadImageToS3 = (key: string, file: any) => {
   return s3
@@ -26,39 +24,43 @@ const uploadImageToS3 = (key: string, file: any) => {
     .promise();
 };
 
-const updateRecord = ({ fileName }: any) => {
+const updateRecord = (Item: any) => {
   return dynamoDB
     .put({
       TableName: env.table,
-      Item: {
-        appKey: appKey,
-        sortKey: `images#${fileName}`,
-        createdDate: new Date().toISOString(),
-        updatedDate: new Date().toISOString(),
-        isIndexed: false,
-      },
+      Item,
     })
     .promise();
 };
 
-const checkAuthorization = async (authorization: string) => {
+const checkAuthorization = async (authorization: string | undefined) => {
   if (authorization) {
     try {
-      await verifier.verify(authorization);
-      return true;
+      const data = await verifier.verify(authorization);
+      return data.email;
     } catch (error) {
-      return false;
+      console.log(error);
+      return null;
     }
   }
-  return false;
+  return null;
 };
 
-app.put('/', async (req, res) => {
+app.put('/:folder', async (req, res) => {
   const { authorization } = req.headers;
   const { ...rest } = req.query;
-  const { file } = req.files as any;
+  const { data } = req.files as any;
   const { name } = req.fields as any;
+  const { folder } = req.params;
 
+  if (!folder) {
+    res.json({
+      code: 1,
+      message: 'Folder params is missing',
+      ...rest,
+    });
+    return;
+  }
   if (!checkEnv()) {
     res.json({
       message: 'Env values are not set',
@@ -67,26 +69,52 @@ app.put('/', async (req, res) => {
     });
     return;
   }
-  const hasAccess = await checkAuthorization(authorization as string);
-  if (!hasAccess) {
+  const createdBy = await checkAuthorization(authorization);
+  if (!createdBy) {
     res.json({
       message: 'You are not authorized',
       ...rest,
     });
     return;
   }
-  if (file && name) {
-    await uploadImageToS3(name, fs.createReadStream(file.path));
-    await updateRecord({ fileName: name });
+  const extension = FileTypeMapping[data.type];
+
+  if (!extension) {
     res.json({
-      code: 1,
+      message: 'Extension not supported',
       ...rest,
     });
     return;
   }
+  const uid = randomUUID();
+
+  const fileName = `${uid}.${extension}`;
+  const fileFolder = DriveFolderMapping[data.type];
+  if (data && name) {
+    const insertData = {
+      appKey: FolderAppKey,
+      sortKey: `${folder}#${fileName}`,
+      createdDate: new Date().toISOString(),
+      updatedDate: new Date().toISOString(),
+      createdBy,
+      id: fileName,
+      path: `${fileFolder}/${fileName}`,
+      type: data.type,
+      metadata: {},
+      label: fileName,
+    };
+    await uploadImageToS3(`${fileFolder}/${fileName}`, fs.createReadStream(data.path));
+    await updateRecord(insertData);
+    res.json({
+      code: 0,
+      message: 'success',
+      ...rest,
+    });
+
+    return;
+  }
   res.json({
-    code: 0,
-    message: 'success',
+    code: 1,
     ...rest,
   });
 });
@@ -102,18 +130,22 @@ app.put('/sync', async (req, res) => {
     });
     return;
   }
-  const hasAccess = await checkAuthorization(authorization as string);
-  if (!hasAccess) {
-    res.json({
-      message: 'You are not authorized',
-      code: 1,
-      ...rest,
-    });
-    return;
-  }
+  // const createdBy = await checkAuthorization(authorization as string);
+  // if (!createdBy) {
+  //   res.json({
+  //     message: 'You are not authorized',
+  //     code: 1,
+  //     ...rest,
+  //   });
+  //   return;
+  // }
+  const values = await getAllFilesFromBucket();
+  indexFiles(values);
   res.json({
     code: 0,
     message: 'success',
+    result: values,
+    length: values.length,
     ...rest,
   });
 });
