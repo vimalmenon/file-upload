@@ -36,6 +36,8 @@ jobs:
         aws-region: ${{ env.REGION }}
     - name: list files
       run: ls -ltra
+    - name: list files
+      run: cat .env
     - name: Build the Docker image
       run: docker build -t krishiv-menon:latest .
     - name: Push to ECR
