@@ -130,15 +130,15 @@ app.put('/sync', async (req, res) => {
     });
     return;
   }
-  // const createdBy = await checkAuthorization(authorization as string);
-  // if (!createdBy) {
-  //   res.json({
-  //     message: 'You are not authorized',
-  //     code: 1,
-  //     ...rest,
-  //   });
-  //   return;
-  // }
+  const createdBy = await checkAuthorization(authorization as string);
+  if (!createdBy) {
+    res.json({
+      message: 'You are not authorized',
+      code: 1,
+      ...rest,
+    });
+    return;
+  }
   const values = await getAllFilesFromBucket();
   indexFiles(values);
   res.json({
