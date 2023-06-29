@@ -22,12 +22,11 @@ jobs:
     - name: Create env file
       run: |
         touch .env 
-        PORT=${{ env.PORT }} >> .env 
-        DYNAMO_DB_Table=${{ env.DYNAMO_DB_Table }} >> .env
-        S3_BUCKET=${{ env.S3_BUCKET }} >> .env 
-        USER_POOL_ID=${{ env.USER_POOL_ID }} >> .env 
-        CLIENT_ID=${{ env.CLIENT_ID }} >> .env
-        Reading File >> .env
+        echo PORT=${{ env.PORT }} >> .env 
+        echo DYNAMO_DB_Table=${{ env.DYNAMO_DB_Table }} >> .env
+        echo S3_BUCKET=${{ env.S3_BUCKET }} >> .env 
+        echo USER_POOL_ID=${{ env.USER_POOL_ID }} >> .env 
+        echo CLIENT_ID=${{ env.CLIENT_ID }} >> .env
         cat .env
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v1
