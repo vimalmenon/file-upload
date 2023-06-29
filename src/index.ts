@@ -34,15 +34,15 @@ const updateRecord = (Item: any) => {
 };
 
 const checkAuthorization = async (authorization: string | undefined) => {
-  // if (authorization) {
-  //   try {
-  //     const data = await verifier.verify(authorization);
-  //     return data.email;
-  //   } catch (error) {
-  //     console.log(error);
-  //     return null;
-  //   }
-  // }
+  if (authorization) {
+    try {
+      const data = await verifier.verify(authorization);
+      return data.email;
+    } catch (error) {
+      console.log(error);
+      return null;
+    }
+  }
   return null;
 };
 

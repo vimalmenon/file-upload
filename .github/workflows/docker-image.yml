@@ -27,17 +27,12 @@ jobs:
         echo S3_BUCKET=${{ env.S3_BUCKET }} >> .env 
         echo USER_POOL_ID=${{ env.USER_POOL_ID }} >> .env 
         echo CLIENT_ID=${{ env.CLIENT_ID }} >> .env
-        cat .env
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v1
       with:
         aws-access-key-id: ${{ env.ACCESS_KEY }}
         aws-secret-access-key: ${{ env.SECRET_KEY }}
         aws-region: ${{ env.REGION }}
-    - name: list files
-      run: ls -ltra
-    - name: list files
-      run: cat .env
     - name: Build the Docker image
       run: docker build -t krishiv-menon:latest .
     - name: Push to ECR
