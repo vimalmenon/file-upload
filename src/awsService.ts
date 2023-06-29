@@ -8,8 +8,9 @@ export const dynamoDB = new DynamoDB.DocumentClient({
 });
 export const s3 = new S3();
 
-export const verifier = CognitoJwtVerifier.create({
-  userPoolId: env.userPoolId,
-  tokenUse: 'id',
-  clientId: env.clientId,
-});
+// export const verifier = CognitoJwtVerifier.create({
+//   userPoolId: env.userPoolId,
+//   tokenUse: 'id',
+//   clientId: env.clientId,
+// });
+export const verifier = {}
