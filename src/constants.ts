@@ -69,7 +69,6 @@ export const env = {
   clientId: process.env.CLIENT_ID || '',
 };
 
-console.log(env)
 export const FolderAppKey = 'APP#KM#FOLDERS_FILE';
 
 export const UnIndexedFolder = '08bdaba3-4452-44fb-bcd2-aa00791fb8ce';

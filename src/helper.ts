@@ -25,6 +25,23 @@ export const indexFiles = async (values: string[]) => {
     }
   }
 };
+
+export const getAllFileDataWithPath = (value: string) => {
+  const params = {
+    TableName: env.table,
+    KeyConditionExpression: '#appKey = :appKey',
+    FilterExpression: '#path = :path',
+    ExpressionAttributeNames: {
+      '#appKey': 'appKey',
+      '#path': 'path',
+    },
+    ExpressionAttributeValues: {
+      ':appKey': FolderAppKey,
+      ':path': value,
+    },
+  };
+  return dynamoDB.query(params).promise();
+};
 export const checkFileExits = async (value: string): Promise<number> => {
   const params = {
     TableName: env.table,

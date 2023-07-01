@@ -4,10 +4,11 @@ import fs from 'fs';
 import cors from 'cors';
 import express from 'express';
 import formidableMiddleware from 'express-formidable';
+import convert from 'heic-convert';
 
 import { dynamoDB, s3, verifier } from './awsService';
 import { env, FolderAppKey, FileTypeMapping, DriveFolderMapping } from './constants';
-import { checkEnv, getAllFilesFromBucket, indexFiles } from './helper';
+import { checkEnv, getAllFilesFromBucket, indexFiles, getAllFileDataWithPath } from './helper';
 
 const app = express();
 
@@ -45,6 +46,87 @@ const checkAuthorization = async (authorization: string | undefined) => {
   }
   return null;
 };
+
+app.put('/convert', async (req, res) => {
+  const { authorization } = req.headers;
+  const { type, path } = req.fields as any;
+  const { ...rest } = req.query;
+
+  if (type !== 'image/heic') {
+    res.json({
+      code: 1,
+      message: 'File type has to be of type heic',
+      ...rest,
+    });
+    return;
+  }
+  const result = await getAllFileDataWithPath(path);
+  const updatedBy = await checkAuthorization(authorization);
+  if (!updatedBy) {
+    res.json({
+      message: 'You are not authorized',
+      ...rest,
+    });
+    return;
+  }
+  if (result.Items?.length) {
+    const item = await s3
+      .getObject({
+        Bucket: env.s3,
+        Key: path,
+      })
+      .promise();
+    s3.deleteObject({
+      Bucket: env.s3,
+      Key: path,
+    });
+    const outputBuffer = await convert({
+      buffer: item.Body as Buffer, // the HEIC file buffer
+      format: 'JPEG', // output format
+      quality: 1, // the jpeg compression quality, between 0 and 1
+    });
+    await s3
+      .putObject({
+        Bucket: env.s3,
+        Key: result.Items[0].path,
+        Body: outputBuffer,
+        ContentType: 'image/jpeg',
+      })
+      .promise();
+    await dynamoDB
+      .update({
+        TableName: env.table,
+        Key: {
+          appKey: FolderAppKey,
+          sortKey: result.Items[0].sortKey,
+        },
+        UpdateExpression: `set #type=:type,  #updatedDate=:updatedDate, #updatedBy=:updatedBy`,
+        ExpressionAttributeValues: {
+          ':updatedDate': new Date().toISOString(),
+          ':type': 'image/jpeg',
+          ':updatedBy': updatedBy,
+        },
+        ExpressionAttributeNames: {
+          '#updatedDate': 'updatedDate',
+          '#type': 'type',
+          '#updatedBy': 'updatedBy',
+        },
+        ReturnValues: 'UPDATED_NEW',
+      })
+      .promise();
+    res.json({
+      code: 0,
+      message: 'success',
+      ...rest,
+    });
+    return;
+  }
+  res.json({
+    code: 1,
+    message: 'File not found',
+    ...rest,
+  });
+});
 
 app.put('/:folder', async (req, res) => {
   const { authorization } = req.headers;
