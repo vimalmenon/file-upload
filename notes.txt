@@ -1,3 +1,5 @@
 [Refactor] Need to refactor convert code 
-[Refactor] refactor upload code
+[Refactor] Refactor upload code
 [Feature] Need to reduce the warning
+[Feature] Setup branching system
+[Feature] Need to add test 
